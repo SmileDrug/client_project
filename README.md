@@ -1,5 +1,5 @@
 # client_project
-install pip : - https://pip.pypa.io/en/stable/installing/
+install pip : - https://pip.pypa.io/en/stable/installing/ 
 install virtualenv : - pip install virtualenv
 create virtualenv :- virtualenv venv
 activate virtualenv :- venv/scripts/activate
