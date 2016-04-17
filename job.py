@@ -8,7 +8,8 @@ from models import Borrower,Embedded_Documents,connector,Loans,Relation_Borrower
 import datetime
 from util import *
 from analytics import *
-
+import schedule
+import time
 
 def getDataFromAPI():
     payload = {'showAll' : 'false'}
@@ -117,5 +118,20 @@ def JSONTODB(_JSON):
     else:
         print "nothing json found"
 
-json_data = getDataFromAPI()
-JSONTODB(json_data)
+def job():
+    json_data = getDataFromAPI()
+    JSONTODB(json_data)
+
+schedule.every().day.at("00:00").do(job)
+schedule.every().day.at("13:35").do(job)
+schedule.every().day.at("13:39").do(job)
+schedule.every().day.at("12:00").do(job)
+schedule.every().day.at("16:00").do(job)
+schedule.every().day.at("18:00").do(job)
+schedule.every().day.at("22:00").do(job)
+
+while 1:
+    print "started again"
+    schedule.run_pending()
+    print "ended"
+    time.sleep(1)

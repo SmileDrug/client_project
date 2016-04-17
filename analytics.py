@@ -46,7 +46,7 @@ class Analytics:
                 self.table.append(row)
 
     def calcScore(self,loan, dummy, weight, const):
-        import pdb;pdb.set_trace()
+        # import pdb;pdb.set_trace()
         score = const
         for i in range(len(dummy)):
             score += dummy[i]*weight[i]
