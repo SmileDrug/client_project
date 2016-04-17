@@ -4,15 +4,17 @@ import os
 from settings import *
 import json
 import pdb
-from models import Borrower,Embedded_Documents,connector,Loans,Relation_Borrower_Loan
+from models import Borrower,Embedded_Documents,connector,Loans,Relation_Borrower_Loan,analytics as analytics_mongo
 import datetime
 from util import *
+from analytics import *
+
 
 def getDataFromAPI():
-	payload = {'showAll' : 'false'}
-	resp = requests.get(loanListURL, headers = header, params = payload)
-	resp.raise_for_status()
-	return resp.json()['loans']
+    payload = {'showAll' : 'false'}
+    resp = requests.get(loanListURL, headers = header, params = payload)
+    resp.raise_for_status()
+    return resp.json()['loans']
 # 81562703
 def JSONTODB(_JSON):
     if _JSON is not None:
@@ -20,6 +22,7 @@ def JSONTODB(_JSON):
         data = _JSON
         for d in data:
             #First lets work with borrower
+            # import pdb;pdb.set_trace()
             memberId = d["memberId"]
             borrower = Borrower.Borrower.objects(memberId=memberId).first()
             if borrower is None:
@@ -93,6 +96,20 @@ def JSONTODB(_JSON):
                 terms[t] = float(d[t])
             loan["terms"] = terms
             loan.save()
+            #Below function will perform will perform analytics on a single loan object
+            analyticsObject = analytics_mongo.Analytics()
+            analyticsBrain = Analytics(d)
+            analyticsBrain.performAnalytics()
+            analyticsObject.loanObject = loan
+            analyticsObject.postLoanDebtToIncome = analyticsBrain.postLoanDebtToIncome
+            analyticsObject.loanToIncome = analyticsBrain.loanToIncome
+            analyticsObject.selected = analyticsBrain.selected
+            analyticsObject.expDefaultRate = analyticsBrain.expDefaultRate
+            analyticsObject.exposure_Cap = analyticsBrain.exposure_Cap
+            analyticsObject.jpScore = analyticsBrain.JPscore
+            analyticsObject.save()
+
+            #Many to many relationship between Loan and borrower
             relation = Relation_Borrower_Loan.Borrower_AND_Loan()
             relation.borrower = borrower
             relation.loan = loan
