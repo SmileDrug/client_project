@@ -65,7 +65,11 @@ def JSONTODB(_JSON):
                 pass
             loan["acceptD"] = strToDate(d["acceptD"])
             loan["initialListStatus"] = d["initialListStatus"]
-            loan["reviewStatusD"] = strToDate(d["reviewStatusD"])
+  #          import pdb;pdb.set_trace()
+            try:
+                loan["reviewStatusD"] = strToDate(d["reviewStatusD"])
+            except:
+                loan["reviewStatusD"] = None
             loan["fundedAmount"] = float(d["fundedAmount"])
             loan["reviewStatus"] = d["reviewStatus"]
             if d["isIncV"] == "VERIFIED":
@@ -122,13 +126,14 @@ def job():
     json_data = getDataFromAPI()
     JSONTODB(json_data)
 
-schedule.every().day.at("00:00").do(job)
+schedule.every().day.at("00:52").do(job)
 schedule.every().day.at("13:35").do(job)
 schedule.every().day.at("13:39").do(job)
-schedule.every().day.at("12:00").do(job)
-schedule.every().day.at("16:00").do(job)
+schedule.every().day.at("12:54").do(job)
+schedule.every().day.at("16:05").do(job)
 schedule.every().day.at("18:00").do(job)
 schedule.every().day.at("22:00").do(job)
+schedule.every(2).minutes.do(job)
 
 while 1:
     print "started again"

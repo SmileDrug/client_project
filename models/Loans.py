@@ -12,7 +12,7 @@ class Loans(DynamicDocument):
     isIncVJoint = BooleanField()
     acceptD = DateTimeField()
     initialListStatus = StringField()
-    reviewStatusD = DateTimeField()
+    reviewStatusD = DateTimeField(default=None)
     fundedAmount = FloatField()
     reviewStatus = StringField()
     isIncV = BooleanField()
