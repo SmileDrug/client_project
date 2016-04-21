@@ -122,8 +122,8 @@ def JSONTODB(_JSON):
             analyticsObject.exposure_Cap = analyticsBrain.exposure_Cap
             analyticsObject.jpScore = analyticsBrain.JPscore
             analyticsObject.save()
-            analyticsObject.createD = toEST(analyticsObject.id.generation_time)
-    	    analyticsObject.save()
+            # analyticsObject.createD = toEST(analyticsObject.id.generation_time)
+    	    # analyticsObject.save()
             #Many to many relationship between Loan and borrower
             relation = Relation_Borrower_Loan.Borrower_AND_Loan()
             relation.borrower = borrower
