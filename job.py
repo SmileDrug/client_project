@@ -53,6 +53,9 @@ def JSONTODB(_JSON):
                     pass
             borrower["credit_buereu"] = credit_buereu
             borrower.save()
+            pullId = toEST(borrower.id.generation_time)
+ 	    borrower.pullId = pullId
+	    borrower.save()
             #Now its time by Loan
             loan = Loans.Loans()
             loan["id_obtained_from_platform"] = str(d["id"])
@@ -101,11 +104,17 @@ def JSONTODB(_JSON):
                 terms[t] = float(d[t])
             loan["terms"] = terms
             loan.save()
+	    pd = loan.id.generation_time
+            import pdb;pdb.set_trace()
+	    pd = toEST(pd)
+	    loan["pullD"] = pd
+	    loan.save()
             #Below function will perform will perform analytics on a single loan object
             analyticsObject = analytics_mongo.Analytics()
             analyticsBrain = Analytics(d)
             analyticsBrain.performAnalytics()
             analyticsObject.loanObject = loan
+	    
             analyticsObject.postLoanDebtToIncome = analyticsBrain.postLoanDebtToIncome
             analyticsObject.loanToIncome = analyticsBrain.loanToIncome
             analyticsObject.selected = analyticsBrain.selected
@@ -113,7 +122,8 @@ def JSONTODB(_JSON):
             analyticsObject.exposure_Cap = analyticsBrain.exposure_Cap
             analyticsObject.jpScore = analyticsBrain.JPscore
             analyticsObject.save()
-
+            analyticsObject.createD = toEST(analyticsObject.id.generation_time)
+	    analyticsObject.save()
             #Many to many relationship between Loan and borrower
             relation = Relation_Borrower_Loan.Borrower_AND_Loan()
             relation.borrower = borrower
@@ -126,14 +136,10 @@ def job():
     json_data = getDataFromAPI()
     JSONTODB(json_data)
 
-schedule.every().day.at("00:52").do(job)
-schedule.every().day.at("13:35").do(job)
-schedule.every().day.at("13:39").do(job)
-schedule.every().day.at("12:54").do(job)
-schedule.every().day.at("16:05").do(job)
-schedule.every().day.at("18:00").do(job)
-schedule.every().day.at("22:00").do(job)
-schedule.every(2).minutes.do(job)
+schedule.every().day.at("09:00").do(job)
+schedule.every().day.at("07:29").do(job)
+schedule.every().day.at("17:00").do(job)
+schedule.every().day.at("21:00").do(job)
 
 while 1:
     print "started again"
