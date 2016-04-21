@@ -10,6 +10,7 @@ from util import *
 from analytics import *
 import schedule
 import time
+from datetime import datetime
 
 def getDataFromAPI():
     payload = {'showAll' : 'false'}
@@ -54,8 +55,8 @@ def JSONTODB(_JSON):
             borrower["credit_buereu"] = credit_buereu
             borrower.save()
             pullId = toEST(borrower.id.generation_time)
- 	    borrower.pullId = pullId
-	    borrower.save()
+     	    borrower.pullId = pullId
+    	    borrower.save()
             #Now its time by Loan
             loan = Loans.Loans()
             loan["id_obtained_from_platform"] = str(d["id"])
@@ -103,18 +104,17 @@ def JSONTODB(_JSON):
             for t in terms:
                 terms[t] = float(d[t])
             loan["terms"] = terms
+    	    loan["pullD"] = datetime.now()
             loan.save()
-	    pd = loan.id.generation_time
-            import pdb;pdb.set_trace()
-	    pd = toEST(pd)
-	    loan["pullD"] = pd
-	    loan.save()
+    	    # pd = toEST(pd)
+            # print pd
+    	    loan = loan.save()
             #Below function will perform will perform analytics on a single loan object
             analyticsObject = analytics_mongo.Analytics()
             analyticsBrain = Analytics(d)
             analyticsBrain.performAnalytics()
             analyticsObject.loanObject = loan
-	    
+
             analyticsObject.postLoanDebtToIncome = analyticsBrain.postLoanDebtToIncome
             analyticsObject.loanToIncome = analyticsBrain.loanToIncome
             analyticsObject.selected = analyticsBrain.selected
@@ -123,7 +123,7 @@ def JSONTODB(_JSON):
             analyticsObject.jpScore = analyticsBrain.JPscore
             analyticsObject.save()
             analyticsObject.createD = toEST(analyticsObject.id.generation_time)
-	    analyticsObject.save()
+    	    analyticsObject.save()
             #Many to many relationship between Loan and borrower
             relation = Relation_Borrower_Loan.Borrower_AND_Loan()
             relation.borrower = borrower
