@@ -14,6 +14,7 @@ from datetime import datetime
 
 def getDataFromAPI():
     payload = {'showAll' : 'false'}
+    requests.HTTPError
     resp = requests.get(loanListURL, headers = header, params = payload)
     resp.raise_for_status()
     return resp.json()['loans']
@@ -54,9 +55,6 @@ def JSONTODB(_JSON):
                     pass
             borrower["credit_buereu"] = credit_buereu
             borrower.save()
-            pullId = toEST(borrower.id.generation_time)
-     	    borrower.pullId = pullId
-    	    borrower.save()
             #Now its time by Loan
             loan = Loans.Loans()
             loan["id_obtained_from_platform"] = str(d["id"])
@@ -137,7 +135,7 @@ def job():
     JSONTODB(json_data)
 
 schedule.every().day.at("09:00").do(job)
-schedule.every().day.at("07:29").do(job)
+schedule.every().day.at("13:00").do(job)
 schedule.every().day.at("17:00").do(job)
 schedule.every().day.at("21:00").do(job)
 
