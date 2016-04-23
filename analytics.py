@@ -74,7 +74,8 @@ class Analytics:
                 dummy.append(1)
             else:
                 dummy.append(0)
-
+        if l[self.ATTRIBUTE_1] is None:
+            l[self.ATTRIBUTE_1] = 0.0
         if float(l[self.ATTRIBUTE_1]) <= 50:
             l["JPscore"] = self.calcScore(l, dummy, self.step2[0], self.CONST_1)
         else:
@@ -82,14 +83,21 @@ class Analytics:
             #---------------------End Calculating JPscore -------------------#
 
             #-------------------------------Selected or Not-------------------------------
-        if l["JPscore"] < self.X:
-            self.selected = True
-        else:
+        # if l["JPscore"] < self.X:
+        #     self.selected = True
+        # else:
+        #     self.selected = False
+
+        self.calc_exposure_Cap(l)
+    	if l['Default_Rate'] == None:
             self.selected = False
-            #import pdb;pdb.set_trace()
-            self.calc_exposure_Cap(l)
-            self.JPscore = l["JPscore"]
-            self.expDefaultRate = l["expDefaultRate"]
-            self.exposure_Cap = l["Exposure_Cap"]
-            self.loanToIncome = l["loanToIncome"]
-            self.postLoanDebtToIncome =l["postLoanDebtToIncome"]
+    	elif l['intRate'] - l['Default_Rate'] > self.X:
+            self.selected = True
+    	else:
+            self.selected = False
+
+        self.JPscore = l["JPscore"]
+        self.expDefaultRate = l["expDefaultRate"]
+        self.exposure_Cap = l["Exposure_Cap"]
+        self.loanToIncome = l["loanToIncome"]
+        self.postLoanDebtToIncome =l["postLoanDebtToIncome"]
