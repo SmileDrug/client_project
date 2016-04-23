@@ -120,8 +120,6 @@ def JSONTODB(_JSON):
             analyticsObject.exposure_Cap = analyticsBrain.exposure_Cap
             analyticsObject.jpScore = analyticsBrain.JPscore
             analyticsObject.save()
-            # analyticsObject.createD = toEST(analyticsObject.id.generation_time)
-    	    # analyticsObject.save()
             #Many to many relationship between Loan and borrower
             relation = Relation_Borrower_Loan.Borrower_AND_Loan()
             relation.borrower = borrower
@@ -140,7 +138,5 @@ schedule.every().day.at("17:00").do(job)
 schedule.every().day.at("21:00").do(job)
 
 while 1:
-    print "started again"
     schedule.run_pending()
-    print "ended"
     time.sleep(1)

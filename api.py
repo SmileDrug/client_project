@@ -5,7 +5,7 @@ from models import Borrower
 from models import admin
 from models import connector
 from flask.ext.cors import CORS
-from datetime import datetime,date
+from datetime import datetime,date,time
 
 app = Flask(__name__)
 CORS(app)
@@ -24,7 +24,9 @@ def login():
 def getstats():
     import pdb;pdb.set_trace()
     today = date.today()
-    loans = Loans.Loans.objects(pullD__gt=today)
+    _date = datetime.combine(today,time(13,5))
+    print _date
+    loans = Loans.Loans.objects(pullD__lt=_date)
     print len(loans)
     print loans[0].id
     return "success"
