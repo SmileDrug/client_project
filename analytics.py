@@ -95,7 +95,6 @@ class Analytics:
             self.selected = True
     	else:
             self.selected = False
-
         self.JPscore = l["JPscore"]
         self.expDefaultRate = l["expDefaultRate"]
         self.exposure_Cap = l["Exposure_Cap"]

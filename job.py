@@ -112,7 +112,6 @@ def JSONTODB(_JSON):
             analyticsBrain = Analytics(d)
             analyticsBrain.performAnalytics()
             analyticsObject.loanObject = loan
-
             analyticsObject.postLoanDebtToIncome = analyticsBrain.postLoanDebtToIncome
             analyticsObject.loanToIncome = analyticsBrain.loanToIncome
             analyticsObject.selected = analyticsBrain.selected
@@ -128,15 +127,10 @@ def JSONTODB(_JSON):
     else:
         print "nothing json found"
 
+
+
 def job():
     json_data = getDataFromAPI()
     JSONTODB(json_data)
 
-schedule.every().day.at("09:00").do(job)
-schedule.every().day.at("13:00").do(job)
-schedule.every().day.at("17:00").do(job)
-schedule.every().day.at("21:00").do(job)
-
-while 1:
-    schedule.run_pending()
-    time.sleep(1)
+job()

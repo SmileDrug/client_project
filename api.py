@@ -16,11 +16,11 @@ CORS(app)
 def login():
     username = request.args.get('username')
     password = request.args.get('password')
-    user = admin.admin.objects(username=username,password=password).single()
+    user = admin.admin.objects(username=username,password=password).first()
     if user is not None:
             return jsonify({"response":"success"})
     else:
-        abort(403)
+        abort(401)
 
 @app.route('/getstats')
 def getstats():
@@ -44,7 +44,7 @@ def getstats():
     analytics_17 = analytics.Analytics.objects(createD__lt=lt_17,createD__gt=gt_17)
     analytics_21 = analytics.Analytics.objects(createD__lt=lt_21,createD__gt=gt_21)
     analytics_today = analytics.Analytics.objects(createD__lt=lt_all,createD__gt=gt_all)
-    pdb.set_trace()
+    # pdb.set_trace()
     analytics_today_selected = getSelected(analytics_today)
 
     summary = getTotalAmount(analytics_today)
@@ -55,7 +55,7 @@ def getstats():
 
     avg_intRate = calcAverageInterestRate(analytics_today_selected)
     annLoss = calcAnnLosses(analytics_today_selected)
-
+    expected_return = calcExpectedReturn(analytics_today_selected)
     stats = {}
     stats["summary"] = summary
     stats["chart_9"] = chart_9
@@ -64,6 +64,7 @@ def getstats():
     stats["chart_21"] = chart_21
     stats["avg_intRate"] = avg_intRate
     stats["annLoss"] = annLoss
+    stats["expected_return"] = expected_return
     return jsonify(stats)
 
 def getSelected(dataset):
@@ -78,14 +79,29 @@ def getExpectedReturn(dataset):
     pass
 
 def calcAnnLosses(dataset):
-    pdb.set_trace()
-    annLoss = str(sum([float(l.expDefaultRate * l.loanObject.terms.loanAmount) for l in dataset]) / sum([float(l.loanObject.terms.loanAmount) for l in dataset])) + ' %'
-    return annLoss
+    # pdb.set_trace()
+    try:
+        annLoss = str(sum([float(l.expDefaultRate * l.loanObject.terms.loanAmount) for l in dataset]) / sum([float(l.loanObject.terms.loanAmount) for l in dataset]))
+    except:
+        return 0
+    return round(float(annLoss),2)
 
 def calcAverageInterestRate(dataset):
-    pdb.set_trace()
-    averageInterestRate = str(sum([float(l.loanObject.terms['intRate'] * l.loanObject.terms.loanAmount) for l in dataset]) / sum([float(l.loanObject.terms.loanAmount) for l in dataset])) + ' %'
-    return averageInterestRate
+    # pdb.set_trace()
+    try:
+        averageInterestRate = str(sum([float(l.loanObject.terms['intRate'] * l.loanObject.terms.loanAmount) for l in dataset]) / sum([float(l.loanObject.terms.loanAmount) for l in dataset]))
+    except:
+        return 0
+
+    return round(float(averageInterestRate),2)
+
+def calcExpectedReturn(dataset):
+    # pdb.set_trace()
+    try:
+        expectedReturn = str(sum([float(float(l.loanObject.terms['intRate'] - l.expDefaultRate) * l.loanObject.terms.loanAmount) for l in dataset]) / sum([float(l.loanObject.terms.loanAmount) for l in dataset]))
+    except:
+        return 0
+    return round(float(expectedReturn),2)
 
 def getTotalAmount(dataset):
     selected = []
@@ -102,7 +118,7 @@ def getTotalAmount(dataset):
     totalSelected = sum(selected_amount)
     totalNotSelected = sum(not_selected_amount)
     total = totalSelected + totalNotSelected
-    return json.dumps({"totalSelected":str(totalSelected),"totalNotSelected":str(totalNotSelected),"total":str(total)})
+    return json.dumps({"selected":str(totalSelected),"not_selected":str(totalNotSelected),"total":str(total)})
 
 if __name__ == "__main__":
     app.run(debug=True)
